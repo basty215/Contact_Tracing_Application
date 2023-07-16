@@ -1,5 +1,6 @@
 import random
 import tkinter as tk
+from tkinter import messagebox
 
 # Player class
 class Player:
@@ -10,18 +11,26 @@ class Player:
         self.score = 0
         self.movements = []
         self.color = color
+        self.remaining_attempts = 2  # Maximum number of attempts
 
 # Function to handle a player's turn
 def play_turn(player, direction):
+    if player.remaining_attempts <= 0:
+        print(f"{player.name} has no remaining attempts.")
+        return False
+
     old_row, old_column = player.row, player.column
     move_player(player, direction)
     if player.row == old_row and player.column == old_column:
         print(f"{player.name} did not move.")
+        player.remaining_attempts -= 1  # Decrease remaining attempts
+        return False  # Invalid move
     else:
         player.movements.append((player.row, player.column))  # Track the movement
         print(f"{player.name} moved to position ({player.row}, {player.column})")
         check_player_contact(player)
         update_gui(player)
+        return True  # Valid move
 
 # Function to move the player in the specified direction
 def move_player(player, direction):
@@ -65,8 +74,14 @@ def update_gui(player):
 def handle_click(player, direction):
     global turn
     if player == players[turn]:
-        play_turn(player, direction)
-        if player.row == board_rows - 1 and player.column == board_columns - 1:
+        valid_move = play_turn(player, direction)
+        if not valid_move:
+            messagebox.showinfo("Invalid Move", "You cannot move outside the board boundaries. Try again.")
+            if player.remaining_attempts <= 0:
+
+                turn = (turn + 1) % len(players)
+                update_button_visibility()
+        elif player.row == board_rows - 1 and player.column == board_columns - 1:
             print(f"{player.name} wins!")
             print(f"{player.name}'s movements: {player.movements}")
             window.destroy()
