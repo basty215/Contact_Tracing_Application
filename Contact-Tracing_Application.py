@@ -11,9 +11,9 @@ class Player:
         self.score = 0
         self.movements = []
         self.color = color
-        self.remaining_attempts = 2  # Maximum number of attempts
+        self.remaining_attempts = 2
 
-# Function to handle a player's turn
+# Function to deside the player turns
 def play_turn(player, direction):
     if player.remaining_attempts <= 0:
         print(f"{player.name} has no remaining attempts.")
